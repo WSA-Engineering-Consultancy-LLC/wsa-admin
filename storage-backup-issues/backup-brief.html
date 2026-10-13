@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+<title>Office File Backup Brief</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow reading column; a single diagram up top, then three status-coded sections (now / fix / after). */
+:root{
+  --bg:#f5f7f9; --surface:#ffffff; --fg:#1b2530; --muted:#5a6878; --line:#d5dde5;
+  --accent:#2b5f8a;
+  --bad:#b4362b; --bad-bg:#fbeceb; --warn:#9a6400; --warn-bg:#fdf3e1; --good:#1f7a4d; --good-bg:#e7f4ec;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12181e; --surface:#1a222b; --fg:#e4eaf0; --muted:#9aa8b6; --line:#2e3a46;
+  --accent:#7fb2dc;
+  --bad:#f08a80; --bad-bg:#3a1f1d; --warn:#f0c060; --warn-bg:#382c15; --good:#6fd29d; --good-bg:#16301f;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12181e; --surface:#1a222b; --fg:#e4eaf0; --muted:#9aa8b6; --line:#2e3a46;
+  --accent:#7fb2dc;
+  --bad:#f08a80; --bad-bg:#3a1f1d; --warn:#f0c060; --warn-bg:#382c15; --good:#6fd29d; --good-bg:#16301f;
+  color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body)}
+.wrap{max-width:46rem;margin:0 auto;padding-inline:16px;padding-block:2.5rem 4rem;display:flex;flex-direction:column;gap:2.5rem}
+h1,h2{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(1.8rem,5vw,2.4rem)}
+h2{font-size:1.35rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+p{margin:0}
+.lede{color:var(--muted);max-width:60ch;margin-top:.5rem}
+section{display:flex;flex-direction:column;gap:1rem}
+.tag{font:600 .72rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:.35rem .55rem;border-radius:4px}
+.t-bad{color:var(--bad);background:var(--bad-bg)} .t-warn{color:var(--warn);background:var(--warn-bg)} .t-good{color:var(--good);background:var(--good-bg)}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1rem;overflow-x:auto}
+.diagram svg{display:block;width:100%;min-width:560px;height:auto}
+svg .box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+svg .t{fill:var(--fg);font:600 14px var(--body)}
+svg .s{fill:var(--muted);font:12px var(--body)}
+svg .ln{stroke:var(--accent);stroke-width:2;fill:none}
+svg .ah{fill:var(--accent)}
+svg .badL{fill:var(--bad);font:600 12px var(--body)}
+svg .badDot{fill:var(--bad)}
+svg .dash{stroke:var(--bad);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.75rem}
+.list li{display:grid;grid-template-columns:auto 1fr;gap:.85rem;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.85rem 1rem}
+.list li > div{min-width:0}
+.dot{width:.7rem;height:.7rem;border-radius:50%;margin-top:.45rem}
+.d-bad{background:var(--bad)} .d-warn{background:var(--warn)} .d-good{background:var(--good)}
+.list b{display:block}
+.list span{color:var(--muted);font-size:.94rem}
+.ask{border-left:3px solid var(--accent);padding:.25rem 0 .25rem 1rem}
+.ask b{font-family:var(--display);font-size:1.1rem}
+.foot{color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Our office file backup: where we stand</h1>
+    <p class="lede">The office file server copies about 50 GB of staff work to Microsoft Azure every day. This page covers what that setup protects, where it falls short, what we can fix for free, and what still needs budget.</p>
+  </header>
+
+  <section>
+    <h2>How it works today</h2>
+    <div class="diagram" role="img" aria-label="Diagram: staff save to the office file server, which copies files through the FortiGate firewall over the internet to Azure cloud storage. The Azure storage accepts connections from anywhere on the internet. The on-site Veeam backup sits in the same building.">
+      <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="box" x="10" y="20" width="130" height="64" rx="6"/>
+        <text class="t" x="75" y="48" text-anchor="middle">Staff PCs</text>
+        <text class="s" x="75" y="67" text-anchor="middle">mapped drive</text>
+        <rect class="box" x="10" y="130" width="130" height="64" rx="6"/>
+        <text class="t" x="75" y="158" text-anchor="middle">Veeam backup</text>
+        <text class="s" x="75" y="177" text-anchor="middle">same building</text>
+        <rect class="box" x="185" y="70" width="130" height="64" rx="6"/>
+        <text class="t" x="250" y="98" text-anchor="middle">File server</text>
+        <text class="s" x="250" y="117" text-anchor="middle">Azure File Sync</text>
+        <rect class="box" x="355" y="70" width="110" height="64" rx="6"/>
+        <text class="t" x="410" y="98" text-anchor="middle">FortiGate</text>
+        <text class="s" x="410" y="117" text-anchor="middle">office firewall</text>
+        <rect class="box" x="505" y="70" width="125" height="64" rx="6"/>
+        <text class="t" x="567" y="98" text-anchor="middle">Azure storage</text>
+        <text class="s" x="567" y="117" text-anchor="middle">cloud copy</text>
+        <path class="ln" d="M140 52 L185 90" marker-end="url(#arr)"/>
+        <path class="ln" d="M185 115 L140 160" marker-end="url(#arr)"/>
+        <path class="ln" d="M315 102 L355 102" marker-end="url(#arr)"/>
+        <path class="ln" d="M465 102 L505 102" marker-end="url(#arr)"/>
+        <text class="s" x="485" y="92" text-anchor="middle">internet</text>
+        <path class="dash" d="M567 170 L567 134"/>
+        <circle class="badDot" cx="567" cy="182" r="5"/>
+        <text class="badL" x="567" y="205" text-anchor="middle">Open to the whole internet</text>
+        <text class="badL" x="567" y="221" text-anchor="middle">(password still required)</text>
+        <path class="dash" d="M10 212 L140 212"/>
+        <text class="badL" x="75" y="228" text-anchor="middle">no offsite copy</text>
+      </svg>
+    </div>
+    <p>Data is encrypted in transit and in storage, and nobody can get in without a password key. Three gaps remain.</p>
+  </section>
+
+  <section>
+    <h2><span class="tag t-bad">Today</span> The problems</h2>
+    <ul class="list">
+      <li><i class="dot d-bad"></i><div><b>The cloud copy is a mirror, not a backup</b><span>If ransomware scrambles files or someone deletes a folder, the change copies to Azure within minutes. Both copies are then damaged.</span></div></li>
+      <li><i class="dot d-bad"></i><div><b>Veeam backups sit in the same building</b><span>A fire, theft or ransomware attack on the office could destroy the files and their backups at the same time.</span></div></li>
+      <li><i class="dot d-warn"></i><div><b>Cloud storage accepts connections from anywhere</b><span>A leaked or stolen access key would work from any computer in the world.</span></div></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="tag t-good">Free fixes</span> What IT will do now</h2>
+    <ul class="list">
+      <li><i class="dot d-good"></i><div><b>Only accept connections from our office</b><span>Lock Azure storage to the office's fixed internet address. A stolen key becomes useless from anywhere else.</span></div></li>
+      <li><i class="dot d-good"></i><div><b>Change the access keys</b><span>Replace the existing keys in case an old copy is lying around.</span></div></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="tag t-warn">After the fixes</span> Risks that remain</h2>
+    <ul class="list">
+      <li><i class="dot d-bad"></i><div><b>Still no ransomware-proof copy</b><span>The free fixes don't stop damaged files from syncing over the good cloud copy. We need dated daily snapshots we can roll back to.</span></div></li>
+      <li><i class="dot d-warn"></i><div><b>Cloud storage still has a public entrance</b><span>The entrance is locked to our office, but it's still visible on the internet. Upcoming compliance audits may ask for a fully private connection.</span></div></li>
+      <li><i class="dot d-warn"></i><div><b>Veeam backups can be attacked</b><span>Without a tamper-proof (immutable) store, ransomware can delete the backups too.</span></div></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What we're asking for, in priority order</h2>
+    <div class="ask"><b>1. Azure Backup for our file share</b><p>Daily dated snapshots kept for 30 days or more. This closes the biggest gap. At our size the cost is low, estimated in the tens of dollars per month.</p></div>
+    <div class="ask"><b>2. Later, for compliance: private connection</b><p>A VPN link to Azure with a private endpoint, which removes the public entrance. Expect roughly $150–350 per month, and plan it when compliance work starts.</p></div>
+  </section>
+
+  <p class="foot">Prepared by IT · October 2026 · Cost figures are estimates; confirm with the Azure pricing calculator.</p>
+</div>
+</body>
+</html>
