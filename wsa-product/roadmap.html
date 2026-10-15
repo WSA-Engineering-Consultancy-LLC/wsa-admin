@@ -1,0 +1,790 @@
+<title>WSA Platform Roadmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  /* === DESIGN TOKENS ===
+     Layout: Six-step vertical pipeline · Discovery → Design → Build → Ship
+     Colors: Violet (workshops) · Steel (DB) · Amber (infra) · Teal (timesheet) · Indigo (HR) · Green (go-live)
+     Type: DM Sans + DM Mono for labels/tags */
+
+  :root {
+    --bg: #F7F8FA;
+    --bg-2: #EDEEF2;
+    --fg: #1A1F2E;
+    --fg-2: #5A6070;
+    --fg-3: #8B92A5;
+    --border: #D8DCE8;
+
+    /* Workshops — violet */
+    --ws-bg: #FAF5FF;
+    --ws-border: #7C3AED;
+    --ws-text: #4C1D95;
+    --ws-tag: #EDE9FE;
+
+    /* DB Design — steel blue */
+    --db-bg: #F0F4FF;
+    --db-border: #2563EB;
+    --db-text: #1E3A8A;
+    --db-tag: #DBEAFE;
+
+    /* Infrastructure — amber */
+    --found-bg: #FFFBF0;
+    --found-border: #D4A017;
+    --found-text: #7A5800;
+    --found-tag: #FEF3C7;
+
+    /* Timesheet — teal */
+    --time-bg: #F0FAFA;
+    --time-border: #0D9488;
+    --time-text: #065A52;
+    --time-tag: #CCFBF1;
+
+    /* HR — indigo */
+    --hr-bg: #F2F4FF;
+    --hr-border: #4B6CB7;
+    --hr-text: #253570;
+    --hr-tag: #E0E7FF;
+
+    /* Go-live — green */
+    --go-bg: #F0FFF4;
+    --go-border: #16A34A;
+    --go-text: #14532D;
+    --go-tag: #DCFCE7;
+
+    /* Open questions */
+    --warn-bg: #FFF8F0;
+    --warn-border: #E87A2A;
+    --warn-text: #A0480A;
+
+    --arrow: #C4C9D8;
+    --shadow: 0 2px 8px rgba(26,31,46,0.08);
+    --shadow-hover: 0 6px 20px rgba(26,31,46,0.14);
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #111520;
+      --bg-2: #1A1F2E;
+      --fg: #E8EBFA;
+      --fg-2: #9AA3BF;
+      --fg-3: #5A6280;
+      --border: #2A3050;
+
+      --ws-bg: #160D2A;
+      --ws-border: #7C3AED;
+      --ws-text: #C4B5FD;
+      --ws-tag: #1E0A40;
+
+      --db-bg: #0A1230;
+      --db-border: #3B82F6;
+      --db-text: #93C5FD;
+      --db-tag: #0E1A40;
+
+      --found-bg: #1F1A08;
+      --found-border: #D4A017;
+      --found-text: #F0D070;
+      --found-tag: #2A2200;
+
+      --time-bg: #071A18;
+      --time-border: #0D9488;
+      --time-text: #5CECD8;
+      --time-tag: #052E2A;
+
+      --hr-bg: #0E1130;
+      --hr-border: #4B6CB7;
+      --hr-text: #9AB0F0;
+      --hr-tag: #141B40;
+
+      --go-bg: #071A0E;
+      --go-border: #16A34A;
+      --go-text: #86EFAC;
+      --go-tag: #052E10;
+
+      --warn-bg: #1A0E05;
+      --warn-border: #E8803A;
+      --warn-text: #F0A060;
+
+      --arrow: #2E3450;
+      --shadow: 0 2px 8px rgba(0,0,0,0.4);
+      --shadow-hover: 0 6px 20px rgba(0,0,0,0.5);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #111520; --bg-2: #1A1F2E; --fg: #E8EBFA; --fg-2: #9AA3BF; --fg-3: #5A6280; --border: #2A3050;
+    --ws-bg: #160D2A; --ws-border: #7C3AED; --ws-text: #C4B5FD; --ws-tag: #1E0A40;
+    --db-bg: #0A1230; --db-border: #3B82F6; --db-text: #93C5FD; --db-tag: #0E1A40;
+    --found-bg: #1F1A08; --found-border: #D4A017; --found-text: #F0D070; --found-tag: #2A2200;
+    --time-bg: #071A18; --time-border: #0D9488; --time-text: #5CECD8; --time-tag: #052E2A;
+    --hr-bg: #0E1130; --hr-border: #4B6CB7; --hr-text: #9AB0F0; --hr-tag: #141B40;
+    --go-bg: #071A0E; --go-border: #16A34A; --go-text: #86EFAC; --go-tag: #052E10;
+    --warn-bg: #1A0E05; --warn-border: #E8803A; --warn-text: #F0A060;
+    --arrow: #2E3450; --shadow: 0 2px 8px rgba(0,0,0,0.4); --shadow-hover: 0 6px 20px rgba(0,0,0,0.5);
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding-block: 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .page { max-width: 960px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { margin-bottom: 40px; }
+
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--fg-3); margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: clamp(22px, 4vw, 32px); font-weight: 700;
+    color: var(--fg); text-wrap: balance; line-height: 1.2; margin-bottom: 12px;
+  }
+
+  .header-sub { font-size: 15px; color: var(--fg-2); max-width: 580px; line-height: 1.6; }
+
+  .header-meta { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px; font-size: 12px;
+    font-weight: 500; border: 1px solid;
+  }
+  .badge-violet  { background: var(--ws-tag);    border-color: var(--ws-border);    color: var(--ws-text); }
+  .badge-steel   { background: var(--db-tag);    border-color: var(--db-border);    color: var(--db-text); }
+  .badge-amber   { background: var(--found-tag); border-color: var(--found-border); color: var(--found-text); }
+  .badge-teal    { background: var(--time-tag);  border-color: var(--time-border);  color: var(--time-text); }
+  .badge-indigo  { background: var(--hr-tag);    border-color: var(--hr-border);    color: var(--hr-text); }
+  .badge-green   { background: var(--go-tag);    border-color: var(--go-border);    color: var(--go-text); }
+
+  /* INSIGHT BANNER */
+  .insight {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-left: 3px solid var(--ws-border); border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 44px;
+    font-size: 13.5px; color: var(--fg-2); line-height: 1.65;
+  }
+  .insight strong { color: var(--fg); }
+
+  /* PHASE SECTION */
+  .phase { margin-bottom: 12px; }
+
+  .phase-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+
+  .phase-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap;
+  }
+  .phase-label-ws    { background: var(--ws-tag);    color: var(--ws-text); }
+  .phase-label-db    { background: var(--db-tag);    color: var(--db-text); }
+  .phase-label-found { background: var(--found-tag); color: var(--found-text); }
+  .phase-label-time  { background: var(--time-tag);  color: var(--time-text); }
+  .phase-label-hr    { background: var(--hr-tag);    color: var(--hr-text); }
+  .phase-label-go    { background: var(--go-tag);    color: var(--go-text); }
+
+  .phase-title { font-size: 17px; font-weight: 600; color: var(--fg); }
+
+  .phase-desc { font-size: 12px; color: var(--fg-3); margin-left: auto; text-align: right; }
+
+  /* CARDS */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+    gap: 12px;
+  }
+
+  .card {
+    border-radius: 10px; padding: 16px; border: 1.5px solid;
+    box-shadow: var(--shadow); transition: box-shadow 0.2s, transform 0.2s; cursor: default;
+  }
+  .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+
+  .card-ws    { background: var(--ws-bg);    border-color: var(--ws-border); }
+  .card-db    { background: var(--db-bg);    border-color: var(--db-border); }
+  .card-found { background: var(--found-bg); border-color: var(--found-border); }
+  .card-time  { background: var(--time-bg);  border-color: var(--time-border); }
+  .card-hr    { background: var(--hr-bg);    border-color: var(--hr-border); }
+  .card-go    { background: var(--go-bg);    border-color: var(--go-border); }
+  .card-warn  { background: var(--warn-bg);  border-color: var(--warn-border); }
+
+  .card-icon { font-size: 20px; margin-bottom: 8px; display: block; }
+
+  .card-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+  .card-ws   .card-name { color: var(--ws-text); }
+  .card-db   .card-name { color: var(--db-text); }
+  .card-found .card-name { color: var(--found-text); }
+  .card-time  .card-name { color: var(--time-text); }
+  .card-hr    .card-name { color: var(--hr-text); }
+  .card-go    .card-name { color: var(--go-text); }
+  .card-warn  .card-name { color: var(--warn-text); }
+
+  .card-detail { font-size: 11.5px; color: var(--fg-3); line-height: 1.55; }
+
+  .card-reuse { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+  .reuse-tag {
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    padding: 2px 6px; border-radius: 3px;
+    background: var(--hr-tag); color: var(--hr-text); border: 1px solid var(--hr-border);
+  }
+
+  /* WORKSHOP LAYOUT — two columns */
+  .ws-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* BRD GATE */
+  .brd-gate {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 4px auto;
+    max-width: 600px;
+    background: var(--bg-2);
+  }
+
+  .brd-gate-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--fg-3); margin-bottom: 14px; text-align: center;
+  }
+
+  .brd-rows { display: flex; flex-direction: column; gap: 8px; }
+
+  .brd-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px;
+  }
+
+  .brd-row-icon { font-size: 18px; flex-shrink: 0; }
+
+  .brd-row-body { min-width: 0; }
+
+  .brd-row-name {
+    font-size: 13px; font-weight: 600; color: var(--fg); margin-bottom: 2px;
+  }
+
+  .brd-row-detail { font-size: 11.5px; color: var(--fg-3); line-height: 1.5; }
+
+  .brd-signoff {
+    border-color: var(--go-border);
+    background: var(--go-bg);
+  }
+
+  .brd-signoff .brd-row-name { color: var(--go-text); }
+
+  .brd-gate-note {
+    margin-top: 12px; text-align: center;
+    font-size: 11.5px; color: var(--fg-3);
+    font-style: italic;
+  }
+
+  /* CONNECTOR ARROWS */
+  .connector {
+    display: flex; justify-content: center; align-items: center;
+    height: 52px; position: relative; margin: 0;
+  }
+
+  .connector-line {
+    width: 2px; height: 32px; background: var(--arrow); position: relative;
+  }
+
+  .connector-line::after {
+    content: ''; position: absolute; bottom: -6px; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--arrow); border-bottom: 0;
+  }
+
+  .connector-label {
+    position: absolute; left: calc(50% + 16px); top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px; font-family: 'DM Mono', monospace;
+    color: var(--fg-3); white-space: nowrap; letter-spacing: 0.05em;
+  }
+
+  /* OPEN QUESTIONS */
+  .gaps-section {
+    margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border);
+  }
+
+  .gaps-section h2 { font-size: 15px; font-weight: 600; color: var(--fg); margin-bottom: 6px; }
+  .gaps-section p  { font-size: 13px; color: var(--fg-3); margin-bottom: 20px; }
+
+  .gaps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .gap-item {
+    background: var(--warn-bg); border: 1px solid var(--warn-border);
+    border-radius: 8px; padding: 14px 16px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+
+  .gap-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .gap-body { min-width: 0; }
+  .gap-title { font-size: 12.5px; font-weight: 600; color: var(--warn-text); margin-bottom: 3px; }
+  .gap-text  { font-size: 11.5px; color: var(--fg-3); line-height: 1.5; }
+
+  /* LEGEND */
+  .legend {
+    margin-top: 40px; display: flex; flex-wrap: wrap; gap: 16px;
+    align-items: center; padding: 16px 20px;
+    background: var(--bg-2); border-radius: 8px; border: 1px solid var(--border);
+  }
+
+  .legend-title {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-3);
+  }
+
+  .legend-items { display: flex; flex-wrap: wrap; gap: 14px; }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-2); }
+
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .legend-dot-ws    { background: var(--ws-border); }
+  .legend-dot-db    { background: var(--db-border); }
+  .legend-dot-found { background: var(--found-border); }
+  .legend-dot-time  { background: var(--time-border); }
+  .legend-dot-hr    { background: var(--hr-border); }
+  .legend-dot-go    { background: var(--go-border); }
+  .legend-dot-gap   { background: var(--warn-border); }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 40px; font-size: 11.5px; color: var(--fg-3);
+    font-family: 'DM Mono', monospace; text-align: right; letter-spacing: 0.04em;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .ws-grid { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: 1fr 1fr; }
+    .phase-desc { display: none; }
+    .connector-label { display: none; }
+  }
+  @media (max-width: 360px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-eyebrow">WSA Architects · Internal Platform · Azure</div>
+    <h1>Platform Build Roadmap</h1>
+    <p class="header-sub">
+      Six-step pipeline from discovery to go-live. Timesheet ships first and becomes the permanent foundation for the HR system.
+    </p>
+    <div class="header-meta">
+      <span class="badge badge-violet">0 · Workshops</span>
+      <span class="badge badge-steel">1 · DB Design</span>
+      <span class="badge badge-amber">2 · Infrastructure</span>
+      <span class="badge badge-teal">3 · Timesheet MVP</span>
+      <span class="badge badge-indigo">4 · HR &amp; Admin MVP</span>
+      <span class="badge badge-green">5 · Go-live</span>
+    </div>
+  </header>
+
+  <!-- INSIGHT -->
+  <div class="insight">
+    <strong>We are not simply replacing BQE and Yomly.</strong> We are building a modernised, in-house Timesheet and HR &amp; Admin platform — designed around WSA's actual business rules, compliant with UAE Labour Law, and built on a foundation that supports the firm's growth. The system is designed to be AI-ready: the architecture will not prevent AI-assisted features from being introduced in future, but AI is not a driver of the current build.
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP 0 — WORKSHOPS
+  ═══════════════════════════════════ -->
+  <section class="phase">
+    <div class="phase-header">
+      <span class="phase-label phase-label-ws">Step 0</span>
+      <span class="phase-title">Discovery Workshops</span>
+      <span class="phase-desc">Before any design or code</span>
+    </div>
+
+    <div class="ws-grid">
+      <div class="card card-ws">
+        <span class="card-icon">⏱</span>
+        <div class="card-name">Timesheet Workshop</div>
+        <div class="card-detail">
+          Ask about the <em>business need</em>, not the tool. What does a valid working day look like? Who chases who? What feeds payroll? What does the finance team actually do with the export?<br><br>
+          <strong style="color:var(--ws-text)">Key questions:</strong> Approval chain, lock dates, overtime rules, project assignment process, BQE pain points.
+        </div>
+      </div>
+      <div class="card card-ws">
+        <span class="card-icon">🏢</span>
+        <div class="card-name">HR &amp; Admin Workshop</div>
+        <div class="card-detail">
+          Extract business rules (leave types, document requirements, org hierarchy, UAE law obligations) separately from Yomly behaviour. Ask: "If Yomly didn't exist tomorrow, what process would you still need to run?"<br><br>
+          <strong style="color:var(--ws-text)">Key questions:</strong> Leave accrual rules, document retention policy, ticket categories, approval delegations.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRD GATE -->
+  <div class="connector">
+    <div class="connector-line"></div>
+    <span class="connector-label">raw outputs → formalise into BRD</span>
+  </div>
+
+  <div class="brd-gate">
+    <div class="brd-gate-title">⛩ Milestone Gate — Business Requirements Document</div>
+    <div class="brd-rows">
+      <div class="brd-row">
+        <span class="brd-row-icon">📄</span>
+        <div class="brd-row-body">
+          <div class="brd-row-name">BRD Drafted</div>
+          <div class="brd-row-detail">Workshop outputs consolidated into a single formal document. Covers: business objective, MVP scope, functional requirements, business rules (approval chains, leave accrual, labour law), non-functional requirements (performance, security, UAE data residency), assumptions, and open questions.</div>
+        </div>
+      </div>
+      <div class="brd-row brd-signoff">
+        <span class="brd-row-icon">✅</span>
+        <div class="brd-row-body">
+          <div class="brd-row-name">BRD Reviewed &amp; Signed Off</div>
+          <div class="brd-row-detail">HR Manager signs off HR requirements · Finance signs off timesheet approval chain &amp; labour law rules · Management signs off MVP scope. <strong style="color:var(--go-text)">This sign-off is the gate.</strong> Any scope change after this point goes through a formal change request — protecting the dev team from scope creep.</div>
+        </div>
+      </div>
+    </div>
+    <div class="brd-gate-note">DB design does not start until this gate is passed</div>
+  </div>
+
+  <div class="connector">
+    <div class="connector-line"></div>
+    <span class="connector-label">BRD signed → design the data</span>
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP 1 — DB DESIGN
+  ═══════════════════════════════════ -->
+  <section class="phase">
+    <div class="phase-header">
+      <span class="phase-label phase-label-db">Step 1</span>
+      <span class="phase-title">Database Design</span>
+      <span class="phase-desc">Derived from workshop outputs · Azure SQL / PostgreSQL</span>
+    </div>
+
+    <div class="cards">
+      <div class="card card-db">
+        <span class="card-icon">🔗</span>
+        <div class="card-name">Shared Entities</div>
+        <div class="card-detail">Employee, Department, Role, OrgHierarchy, AuditLog. Used by both Timesheet and HR. Designed once, extended — never duplicated.</div>
+      </div>
+      <div class="card card-db">
+        <span class="card-icon">⏱</span>
+        <div class="card-name">Timesheet Schema</div>
+        <div class="card-detail">Project, SubActivity, ProjectAssignment, TimeEntry, TimesheetPeriod, ApprovalStep. Shaped by workshop rules — not copied from BQE.</div>
+      </div>
+      <div class="card card-db">
+        <span class="card-icon">🏢</span>
+        <div class="card-name">HR Schema</div>
+        <div class="card-detail">Document, LeaveType, LeaveRequest, TicketCategory, Ticket, EmployeeDocument. Scoped to MVP only — not full Yomly parity.</div>
+      </div>
+      <div class="card card-db">
+        <span class="card-icon">🗄</span>
+        <div class="card-name">Retention &amp; Backup Policy</div>
+        <div class="card-detail">How long each data type is kept. Soft-delete vs hard-delete. Azure automated backups. Defined before build, not after.</div>
+      </div>
+      <div class="card card-db">
+        <span class="card-icon">📁</span>
+        <div class="card-name">File Storage Design</div>
+        <div class="card-detail">Azure Blob Storage for employee documents, timesheet attachments. Folder structure, access control, and naming convention defined upfront.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR 1 → 2 -->
+  <div class="connector">
+    <div class="connector-line"></div>
+    <span class="connector-label">schema approved → provision the environment</span>
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP 2 — SHARED INFRASTRUCTURE
+  ═══════════════════════════════════ -->
+  <section class="phase">
+    <div class="phase-header">
+      <span class="phase-label phase-label-found">Step 2</span>
+      <span class="phase-title">Shared Infrastructure</span>
+      <span class="phase-desc">Azure · Built once · Used by both modules</span>
+    </div>
+
+    <div class="cards">
+      <div class="card card-found">
+        <span class="card-icon">☁️</span>
+        <div class="card-name">Azure Environment Setup</div>
+        <div class="card-detail">Subscription, resource groups, VNet, App Service / Container Apps. Dev → Staging → Production pipeline. Domain + HTTPS certificate.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">🔐</span>
+        <div class="card-name">Authentication &amp; SSO</div>
+        <div class="card-detail">Azure AD / Entra ID integration. Single sign-on for all WSA tools. Integration approach depends on whether AD is local or cloud-synced.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">👥</span>
+        <div class="card-name">Employee Data Seeding</div>
+        <div class="card-detail"><strong style="color:var(--found-text)">One-time activity.</strong> HR uploads a structured Excel template we provide. Bulk import into the DB on day one. Handles missing fields, duplicates, and data quality before go-live.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">👤</span>
+        <div class="card-name">Employee Registry</div>
+        <div class="card-detail"><strong style="color:var(--found-text)">Permanent system.</strong> Live DB + admin UI managing ~500 employee records on an ongoing basis. Joiners, leavers, role changes, access revocation. Queried by every module.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">📦</span>
+        <div class="card-name">Project Data Seeding</div>
+        <div class="card-detail"><strong style="color:var(--found-text)">One-time activity.</strong> Import active projects and sub-activities from BQE or Excel. If export is unavailable, PMs submit a structured template we provide. Must be validated before Timesheet build begins.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">📁</span>
+        <div class="card-name">Project Registry</div>
+        <div class="card-detail"><strong style="color:var(--found-text)">Permanent system.</strong> Master list of projects, sub-activities, and employee assignments. Shared master data — not a Timesheet feature. Queried by any module that needs project context.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">🔑</span>
+        <div class="card-name">Role &amp; Permission Engine</div>
+        <div class="card-detail">Employee, Line Manager, PM, Finance, HR Admin, IT Admin, System Admin. Contextual — same person can be employee in one view, PM in another.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">📝</span>
+        <div class="card-name">System-wide Audit Log</div>
+        <div class="card-detail">Every action logged: who did what, when, on which record. Legal requirement. Shared service — not per-module. Tamper-proof, append-only.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">📧</span>
+        <div class="card-name">Email Delivery Service</div>
+        <div class="card-detail">Azure Communication Services. Sender domain configured (noreply@wsa-architects.com). SPF/DKIM records. Prerequisite for notification engine.</div>
+      </div>
+      <div class="card card-found">
+        <span class="card-icon">🔔</span>
+        <div class="card-name">Notification Engine</div>
+        <div class="card-detail">Email + in-app alerts. Triggered by events across all modules. Timesheet reminders, approval nudges, HR ticket updates all run through here.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR 2 → 3 -->
+  <div class="connector">
+    <div class="connector-line"></div>
+    <span class="connector-label">infrastructure live → build Timesheet MVP</span>
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP 3 — TIMESHEET MVP
+  ═══════════════════════════════════ -->
+  <section class="phase">
+    <div class="phase-header">
+      <span class="phase-label phase-label-time">Step 3 · Priority</span>
+      <span class="phase-title">Timesheet MVP</span>
+      <span class="phase-desc">Replaces BQE · UAE labour law compliant</span>
+    </div>
+
+    <div class="cards">
+      <div class="card card-time">
+        <span class="card-icon">⏱</span>
+        <div class="card-name">Daily Time Entry</div>
+        <div class="card-detail">Select project → sub-activity → enter hours. Weekly view. Mobile-friendly. Soft lock (configurable day), hard lock after final approval.</div>
+      </div>
+      <div class="card card-time">
+        <span class="card-icon">✅</span>
+        <div class="card-name">Approval Workflow</div>
+        <div class="card-detail">Submit → Line Manager → PM → Finance lock. Sequential chain. Delegation when approver is absent. Rejection with mandatory comment.</div>
+      </div>
+      <div class="card card-time">
+        <span class="card-icon">📊</span>
+        <div class="card-name">Reporting &amp; Export</div>
+        <div class="card-detail">Hours by project, team, period, employee. Export to Excel/CSV for payroll and project costing. All backed by the audit log.</div>
+      </div>
+      <div class="card card-time">
+        <span class="card-icon">⏰</span>
+        <div class="card-name">Reminder Automation</div>
+        <div class="card-detail">Replaces manual chase emails. Auto-reminders on incomplete timesheets. Escalation if a timesheet is not submitted by cut-off.</div>
+      </div>
+      <div class="card card-time">
+        <span class="card-icon">⚖️</span>
+        <div class="card-name">UAE Labour Law Rules</div>
+        <div class="card-detail">Min/max hours enforcement, overtime thresholds, grace periods, weekend rules. Non-negotiable compliance layer — needs legal sign-off before any rule is hardcoded.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR 3 → 4 -->
+  <div class="connector">
+    <div class="connector-line"></div>
+    <span class="connector-label">Timesheet ships → reuse infra for HR</span>
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP 4 — HR & ADMIN MVP
+  ═══════════════════════════════════ -->
+  <section class="phase">
+    <div class="phase-header">
+      <span class="phase-label phase-label-hr">Step 4</span>
+      <span class="phase-title">HR &amp; Admin MVP</span>
+      <span class="phase-desc">Replaces Yomly · Reuses Timesheet infra</span>
+    </div>
+
+    <div class="cards">
+      <div class="card card-hr">
+        <span class="card-icon">🎫</span>
+        <div class="card-name">Ticket &amp; Request System</div>
+        <div class="card-detail">HR, IT, Admin requests. Routing by category. Status tracking for employee and handler.</div>
+        <div class="card-reuse">
+          <span class="reuse-tag">↩ Notification Engine</span>
+          <span class="reuse-tag">↩ Approval Workflow</span>
+        </div>
+      </div>
+      <div class="card card-hr">
+        <span class="card-icon">🗂</span>
+        <div class="card-name">Document Vault</div>
+        <div class="card-detail">Personal IDs, work documents. Per-employee access only. Retention and expiry policy from workshop.</div>
+        <div class="card-reuse">
+          <span class="reuse-tag">↩ Employee Registry</span>
+          <span class="reuse-tag">↩ Role &amp; Permissions</span>
+          <span class="reuse-tag">↩ Blob Storage</span>
+        </div>
+      </div>
+      <div class="card card-hr">
+        <span class="card-icon">🗓</span>
+        <div class="card-name">Leave Management</div>
+        <div class="card-detail">Leave requests, balance tracking, calendar visibility. Approval chain already built.</div>
+        <div class="card-reuse">
+          <span class="reuse-tag">↩ Approval Workflow</span>
+          <span class="reuse-tag">↩ Notification Engine</span>
+        </div>
+      </div>
+      <div class="card card-hr">
+        <span class="card-icon">🏢</span>
+        <div class="card-name">Org Chart &amp; Hierarchy</div>
+        <div class="card-detail">Reporting lines and team structure. Hierarchy already defined during Timesheet approval chain build — this is a visualisation layer.</div>
+        <div class="card-reuse">
+          <span class="reuse-tag">↩ Employee Registry</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR 4 → 5 -->
+  <div class="connector">
+    <div class="connector-line"></div>
+    <span class="connector-label">both modules stable → plan the switch</span>
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP 5 — GO-LIVE & CUTOVER
+  ═══════════════════════════════════ -->
+  <section class="phase">
+    <div class="phase-header">
+      <span class="phase-label phase-label-go">Step 5</span>
+      <span class="phase-title">Go-live &amp; Cutover</span>
+      <span class="phase-desc">Switching 500 employees off Yomly &amp; BQE</span>
+    </div>
+
+    <div class="cards">
+      <div class="card card-go">
+        <span class="card-icon">🔄</span>
+        <div class="card-name">Parallel Run Period</div>
+        <div class="card-detail">Run new Timesheet alongside BQE for a defined overlap period. Compare outputs. Catch discrepancies before BQE is switched off. Same for HR.</div>
+      </div>
+      <div class="card card-go">
+        <span class="card-icon">✔️</span>
+        <div class="card-name">Data Validation</div>
+        <div class="card-detail">Verify employee records, project list, and historical data in the new system match source of truth before cutting over.</div>
+      </div>
+      <div class="card card-go">
+        <span class="card-icon">🎓</span>
+        <div class="card-name">Training &amp; Rollout</div>
+        <div class="card-detail">Role-specific training: employees (time entry), managers (approvals), HR (admin panel). Phased rollout by department reduces risk.</div>
+      </div>
+      <div class="card card-go">
+        <span class="card-icon">🛑</span>
+        <div class="card-name">Yomly &amp; BQE Decommission</div>
+        <div class="card-detail">License cancellation timeline. Export final archive from both tools before terminating. Confirm data residency is fully in Azure before cut-off.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPEN QUESTIONS -->
+  <section class="gaps-section">
+    <h2>Open Questions — Must Resolve Before Step 2</h2>
+    <p>These are decision blockers. Each causes design rework if left unresolved at the start of infrastructure setup.</p>
+    <div class="gaps-grid">
+      <div class="gap-item">
+        <span class="gap-icon">⚠️</span>
+        <div class="gap-body">
+          <div class="gap-title">Active Directory: Local or Cloud?</div>
+          <div class="gap-text">Determines the entire Azure AD / Entra ID integration approach. No answer = no SSO design.</div>
+        </div>
+      </div>
+      <div class="gap-item">
+        <span class="gap-icon">⚠️</span>
+        <div class="gap-body">
+          <div class="gap-title">BQE &amp; Yomly Export Access</div>
+          <div class="gap-text">Can we get a data export? If not, HR must use the Excel import template we provide. Must be confirmed before Step 2.</div>
+        </div>
+      </div>
+      <div class="gap-item">
+        <span class="gap-icon">⚠️</span>
+        <div class="gap-body">
+          <div class="gap-title">Payroll Downstream Feed</div>
+          <div class="gap-text">Does approved timesheet data flow into a payroll system? Which one? Manual Excel export or API connection?</div>
+        </div>
+      </div>
+      <div class="gap-item">
+        <span class="gap-icon">⚠️</span>
+        <div class="gap-body">
+          <div class="gap-title">UAE Labour Law — Legal Sign-off</div>
+          <div class="gap-text">Exact overtime thresholds, grace periods, and weekend rules need written confirmation from HR or legal before they are hardcoded.</div>
+        </div>
+      </div>
+      <div class="gap-item">
+        <span class="gap-icon">⚠️</span>
+        <div class="gap-body">
+          <div class="gap-title">Tech Stack Decision</div>
+          <div class="gap-text">Frontend framework, backend language, Azure services selection (App Service vs Container Apps, SQL vs PostgreSQL). Needed before Step 2.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <span class="legend-title">Legend</span>
+    <div class="legend-items">
+      <span class="legend-item"><span class="legend-dot legend-dot-ws"></span>Step 0 · Workshops</span>
+      <span class="legend-item"><span class="legend-dot legend-dot-db"></span>Step 1 · DB Design</span>
+      <span class="legend-item"><span class="legend-dot legend-dot-found"></span>Step 2 · Infrastructure</span>
+      <span class="legend-item"><span class="legend-dot legend-dot-time"></span>Step 3 · Timesheet</span>
+      <span class="legend-item"><span class="legend-dot legend-dot-hr"></span>Step 4 · HR &amp; Admin</span>
+      <span class="legend-item"><span class="legend-dot legend-dot-go"></span>Step 5 · Go-live</span>
+      <span class="legend-item"><span class="legend-dot legend-dot-gap"></span>Open Blocker</span>
+      <span class="legend-item" style="font-size:11px;color:var(--fg-3);font-family:'DM Mono',monospace;">↩ = reused from earlier step</span>
+    </div>
+  </div>
+
+  <div class="footer">WSA Architects · Platform Design · Oct 2026 · High-level view — not final</div>
+
+</div>
